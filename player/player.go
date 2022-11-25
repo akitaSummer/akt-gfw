@@ -1,40 +1,33 @@
 package player
 
 import (
-	"akt-gfw/chat"
-	"akt-gfw/function"
+	"akt-gfw/define"
 )
 
 type Player struct {
-	Uid        uint64
-	FriendList []uint64 // 好友
-	chChat     chan chat.Msg
+	Uid            uint64
+	FriendList     []uint64 // 好友
+	HandlerParamCh chan define.HandlerParam
+	handlers       map[string]Handler
 }
 
 func NewPlayer() *Player {
-	return &Player{
+	p := &Player{
 		Uid:        0,
-		FriendList: nil,
+		FriendList: make([]uint64, 0),
+		handlers:   make(map[string]Handler),
 	}
-}
-
-func (p *Player) AddFirend(fId uint64) {
-	if !function.CheckInNumberSlice(fId, p.FriendList) {
-		p.FriendList = append(p.FriendList, fId)
-	}
-}
-
-func (p *Player) DelFirend(fId uint64) {
-	p.FriendList = function.DelEleInSlice(fId, p.FriendList)
+	p.HandlerRegister()
+	return p
 }
 
 func (p *Player) Run() {
 	for {
 		select {
-		case chatMsg := <-p.chChat:
-			p.ResolveChatMsg(chatMsg)
+		case handlerParam := <-p.HandlerParamCh:
+			if fn, ok := p.handlers[handlerParam.HandlerKey]; ok {
+				fn(handlerParam.Data)
+			}
 		}
 	}
 }
-
-func (p *Player) ResolveChatMsg(chatMsg chat.Msg) {}
