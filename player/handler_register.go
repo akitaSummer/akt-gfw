@@ -1,7 +1,9 @@
 package player
 
+import "akt-gfw/network/protocol/gen/messageId"
+
 func (p *Player) HandlerRegister() {
-	p.handlers["add_friend"] = p.AddFirend
-	p.handlers["del_friend"] = p.DelFirend
-	p.handlers["resolve_chat_msg"] = p.ResolveChatMsg
+	p.handlers[messageId.MessageId_CSAddFriend] = p.AddFriend
+	p.handlers[messageId.MessageId_CSDelFriend] = p.DelFriend
+	p.handlers[messageId.MessageId_CSSendChatMsg] = p.ResolveChatMsg
 }

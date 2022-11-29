@@ -1,21 +1,23 @@
 package player
 
 import (
-	"akt-gfw/define"
+	"akt-gfw/network"
+	"akt-gfw/network/protocol/gen/messageId"
 )
 
 type Player struct {
-	Uid            uint64
-	FriendList     []uint64 // 好友
-	HandlerParamCh chan define.HandlerParam
-	handlers       map[string]Handler
+	UId            uint64
+	FriendList     []uint64 //朋友
+	HandlerParamCh chan *network.SessionPacket
+	handlers       map[messageId.MessageId]Handler
+	session        *network.Session
 }
 
 func NewPlayer() *Player {
 	p := &Player{
-		Uid:        0,
-		FriendList: make([]uint64, 0),
-		handlers:   make(map[string]Handler),
+		UId:        0,
+		FriendList: make([]uint64, 100),
+		handlers:   make(map[messageId.MessageId]Handler),
 	}
 	p.HandlerRegister()
 	return p
@@ -25,8 +27,8 @@ func (p *Player) Run() {
 	for {
 		select {
 		case handlerParam := <-p.HandlerParamCh:
-			if fn, ok := p.handlers[handlerParam.HandlerKey]; ok {
-				fn(handlerParam.Data)
+			if fn, ok := p.handlers[messageId.MessageId(handlerParam.Msg.ID)]; ok {
+				fn(handlerParam)
 			}
 		}
 	}

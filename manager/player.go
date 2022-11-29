@@ -9,7 +9,7 @@ type PlayerMgr struct {
 }
 
 func (pm *PlayerMgr) Add(p player.Player) {
-	pm.players[p.Uid] = p
+	pm.players[p.UId] = p
 	go p.Run()
 }
 

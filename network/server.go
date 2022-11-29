@@ -1,50 +1,40 @@
 package network
 
-import (
-	"fmt"
-	"net"
-)
+import "net"
 
 type Server struct {
-	listener net.Listener
-	address  string
-	network  string
+	tcpListener     net.Listener
+	OnSessionPacket func(packet *SessionPacket)
 }
 
-func NewServer(address, network string) *Server {
-	server := &Server{
-		listener: nil,
-		address:  address,
-		network:  network,
+func NewServer(address string) *Server {
+	resolveTCPAddr, err := net.ResolveTCPAddr("tcp6", address)
+	if err != nil {
+		panic(err)
 	}
-	return server
+	tcpListener, err := net.ListenTCP("tcp6", resolveTCPAddr)
+	if err != nil {
+		panic(err)
+	}
+	s := &Server{}
+	s.tcpListener = tcpListener
+	return s
+
 }
 
 func (s *Server) Run() {
-	resolveTCPAddr, err := net.ResolveTCPAddr("tcp6", s.address)
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	tcpListener, err := net.ListenTCP("tcp6", resolveTCPAddr)
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	s.listener = tcpListener
-
 	for {
-		conn, err := s.listener.Accept()
+		conn, err := s.tcpListener.Accept()
 		if err != nil {
-			continue
+			if _, ok := err.(net.Error); ok {
+				continue
+			}
 		}
-		go func(conn net.Conn) {
+		go func() {
 			newSession := NewSession(conn)
+			SessionMgrInstance.AddSession(newSession)
 			newSession.Run()
-		}(conn)
+			SessionMgrInstance.DelSession(newSession.UId)
+		}()
 	}
 }
