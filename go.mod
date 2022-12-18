@@ -7,7 +7,10 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
 	github.com/lyft/protoc-gen-star v0.6.1 // indirect
+	github.com/phuhao00/spoor v1.0.2 // indirect
+	github.com/phuhao00/sugar v1.0.1 // indirect
 	github.com/spf13/afero v1.9.2 // indirect
+	golang.org/x/exp v0.0.0-20220713135740-79cabaa25d75 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.6.0 // indirect
 	golang.org/x/net v0.1.0 // indirect

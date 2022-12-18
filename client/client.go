@@ -1,9 +1,12 @@
 package main
 
 import (
+	"akt-gfw/logger"
 	"akt-gfw/network"
 	"akt-gfw/network/protocol/gen/messageId"
 	"fmt"
+	"os"
+	"syscall"
 )
 
 type Client struct {
@@ -49,4 +52,19 @@ func (c *Client) OnMessage(packet *network.ClientPacket) {
 	if handler, ok := c.messageHandlers[messageId.MessageId(packet.Msg.ID)]; ok {
 		handler(packet)
 	}
+}
+
+func (c *Client) OnSystemSignal(signal os.Signal) bool {
+	logger.Logger.InfoF("[Client] 收到信号 %v \n", signal)
+	tag := true
+	switch signal {
+	case syscall.SIGHUP:
+		//todo
+	case syscall.SIGPIPE:
+	default:
+		logger.Logger.InfoF("[Client] 收到信号准备退出...")
+		tag = false
+
+	}
+	return tag
 }

@@ -1,9 +1,15 @@
 package main
 
-import "akt-gfw/world"
+import (
+	"akt-gfw/world"
+
+	"github.com/phuhao00/sugar"
+)
 
 func main() {
 	world.MM = world.NewMgrMgr()
 
-	world.MM.Pm.Run()
+	go world.MM.Pm.Run()
+
+	sugar.WaitSignal(world.MM.OnSystemSignal)
 }
